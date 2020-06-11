@@ -10,13 +10,18 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(args: &Vec<String>) -> Result<Config, &'static str> {
-        if args.len() < 3 {
-            return Err("Not enough arguments provided");
-        }
+    pub fn new(mut args: std::env::Args) -> Result<Config, &'static str> {
+        // skip executable name
+        args.next();
 
-        let query = args[1].clone();
-        let filename = args[2].clone();
+        let query = match args.next() {
+            Some(v) => v,
+            None => return Err("Query not provided"),
+        };
+        let filename = match args.next() {
+            Some(v) => v,
+            None => return Err("Filename not provided"),
+        };
         let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
 
         Ok(Config {
